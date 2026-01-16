@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root {
+  /* On définit nos couleurs ici */
+  --background: #0B0F19;
+  /* Notre fameux Bleu Nuit Profond */
+  --foreground: #ffffff;
+  /* Texte Blanc */
+}
+
+/* On applique ces couleurs au corps de la page */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
