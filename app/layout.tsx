@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
 import { Zap } from "lucide-react";
+// IMPORT DU COMPOSANT COOKIE (Depuis le dossier components à la racine)
+import CookieBanner from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "Mandat-Flash | AI Real Estate Intelligence",
@@ -17,13 +19,16 @@ export default function RootLayout({
     <html lang="fr">
       <body className="antialiased bg-[#0B0F19] text-slate-200">
 
+        {/* 1. CONTENU PRINCIPAL (Pages) */}
         <div className="min-h-screen">
           {children}
         </div>
 
+        {/* 2. FOOTER GLOBAL (Obligatoire pour Paddle) */}
         <footer className="border-t border-slate-800 bg-[#050810] py-12">
           <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8 text-sm">
 
+            {/* Colonne Marque */}
             <div className="col-span-1 md:col-span-2 space-y-4">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-indigo-500 fill-indigo-500" />
@@ -38,6 +43,7 @@ export default function RootLayout({
               </p>
             </div>
 
+            {/* Colonne Légal */}
             <div className="space-y-4">
               <h4 className="text-white font-bold uppercase tracking-wider text-xs">Informations Légales</h4>
               <ul className="space-y-2 text-slate-400">
@@ -47,12 +53,12 @@ export default function RootLayout({
               </ul>
             </div>
 
+            {/* Colonne Contact */}
             <div className="space-y-4">
               <h4 className="text-white font-bold uppercase tracking-wider text-xs">Contact & Support</h4>
               <ul className="space-y-2 text-slate-400">
                 <li>
-                  {/* MODIFIE L'EMAIL CI-DESSOUS PAR LE TIEN (VRAI EMAIL) */}
-                  <a href="bokolarry6@gmail.com" className="hover:text-white transition-colors">
+                  <a href="mailto:bokolarry6@gmail.com" className="hover:text-white transition-colors">
                     bokolarry6@gmail.com
                   </a>
                 </li>
@@ -66,6 +72,9 @@ export default function RootLayout({
 
           </div>
         </footer>
+
+        {/* 3. BANNIÈRE COOKIES (S'affiche par-dessus le reste si pas acceptée) */}
+        <CookieBanner />
 
       </body>
     </html>
