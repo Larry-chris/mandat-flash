@@ -3,6 +3,7 @@ export default function RefundPage() {
         <div className="min-h-screen bg-[#0B0F19] text-slate-300 py-20 px-6">
             <div className="max-w-3xl mx-auto prose prose-invert">
                 <h1 className="text-3xl font-bold text-white mb-8">Refund Policy</h1>
+                <p className="text-sm text-slate-500 mb-8">Last Updated: January 2026</p>
 
                 <section className="space-y-6">
                     <h2 className="text-xl font-bold text-white">1. 7-Day Money-Back Guarantee</h2>
@@ -17,7 +18,10 @@ export default function RefundPage() {
 
                     <h2 className="text-xl font-bold text-white">3. How to Request</h2>
                     <p>
-                        Simply email support@mandat-flash.com with your account email. We process refunds within 48 business hours via Paddle.
+                        Simply email us with your account details at: <br />
+                        {/* METS TON VRAI EMAIL ICI */}
+                        <span className="text-indigo-400">bokolarry6@gmail.com</span>.
+                        We process refunds within 48 business hours via Paddle.
                     </p>
                 </section>
             </div>

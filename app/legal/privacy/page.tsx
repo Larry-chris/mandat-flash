@@ -3,6 +3,7 @@ export default function PrivacyPage() {
         <div className="min-h-screen bg-[#0B0F19] text-slate-300 py-20 px-6">
             <div className="max-w-3xl mx-auto prose prose-invert">
                 <h1 className="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
+                <p className="text-sm text-slate-500 mb-8">Last Updated: January 2026</p>
 
                 <section className="space-y-6">
                     <h2 className="text-xl font-bold text-white">1. Data Collection</h2>
@@ -17,7 +18,9 @@ export default function PrivacyPage() {
 
                     <h2 className="text-xl font-bold text-white">3. Your Rights</h2>
                     <p>
-                        You have the right to request access to or deletion of your personal data at any time by contacting us at support@mandat-flash.com.
+                        You have the right to request access to or deletion of your personal data at any time by contacting us at: <br />
+                        {/* bokolarry6@gmail.com */}
+                        <span className="text-indigo-400">bokolarry6@gmail.com</span>.
                     </p>
                 </section>
             </div>
