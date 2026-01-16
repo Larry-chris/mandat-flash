@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react"; // Ajout de Suspense
 import { useSearchParams } from "next/navigation";
 import { Loader2, Lock, CheckCircle, MapPin, Unlock, Download, ChevronLeft, User } from "lucide-react";
 import Link from "next/link";
@@ -15,10 +15,10 @@ interface ReportData {
     error?: string;
 }
 
-export default function AnalysePage() {
+// 1. ON DÉPLACE TOUTE LA LOGIQUE ICI (Renommé en AnalyseContent)
+function AnalyseContent() {
     const searchParams = useSearchParams();
 
-    // ON RÉCUPÈRE LES NOUVEAUX PARAMÈTRES
     const address = searchParams.get("addr") || "Adresse inconnue";
     const clientName = searchParams.get("name") || "";
     const context = searchParams.get("ctx") || "";
@@ -38,7 +38,6 @@ export default function AnalysePage() {
 
         const fetchGeminiData = async () => {
             try {
-                // ON ENVOIE TOUT À L'API
                 const res = await fetch("/api/analyze", {
                     method: "POST",
                     body: JSON.stringify({ address, clientName, context }),
@@ -64,13 +63,11 @@ export default function AnalysePage() {
 
     const handleUnlock = () => setIsUnlocked(true);
 
-    // GÉNÉRATION PDF MISE À JOUR
     const generatePDF = () => {
         if (!report) return;
 
         const doc = new jsPDF();
 
-        // Header
         doc.setFillColor(11, 15, 25);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
@@ -79,14 +76,12 @@ export default function AnalysePage() {
         doc.setFontSize(10);
         doc.text("Dossier Stratégique Confidentiel", 10, 30);
 
-        // Si on a un nom de client, on l'affiche en gros
         if (clientName) {
             doc.text(`Pour : ${clientName}`, 160, 30);
         } else {
             doc.text(`Réf: #IA-${Math.floor(Math.random() * 1000)}`, 160, 30);
         }
 
-        // Titre
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(14);
         doc.text(`Analyse du bien :`, 10, 55);
@@ -97,7 +92,6 @@ export default function AnalysePage() {
         doc.setDrawColor(200, 200, 200);
         doc.line(10, 75, 200, 75);
 
-        // Prix
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
         doc.text("Estimation de Valeur :", 10, 90);
@@ -108,7 +102,6 @@ export default function AnalysePage() {
         doc.setTextColor(100, 100, 100);
         doc.text(`Précision estimée : ${report.confidence_score}`, 80, 105);
 
-        // Profil Vendeur (Personnalisé avec le contexte)
         doc.setFillColor(245, 247, 250);
         doc.rect(10, 120, 190, 40, 'F');
         doc.setFontSize(12);
@@ -123,7 +116,6 @@ export default function AnalysePage() {
         const splitDesc = doc.splitTextToSize(`"${report.owner_profile?.description || ""}"`, 180);
         doc.text(splitDesc, 15, 148);
 
-        // Stratégie
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
         doc.text("Arguments Clés & Négociation :", 10, 175);
@@ -144,12 +136,10 @@ export default function AnalysePage() {
         doc.setTextColor(150, 150, 150);
         doc.text("Généré par IA. Usage interne exclusif.", 10, 280);
 
-        // Nom du fichier personnalisé
         const filename = clientName ? `Dossier_${clientName.replace(/\s/g, '_')}.pdf` : `Analyse_Bien.pdf`;
         doc.save(filename);
     };
 
-    // --- VUE CHARGEMENT ---
     if (!isReadyToPay) {
         return (
             <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center p-6">
@@ -170,11 +160,8 @@ export default function AnalysePage() {
         );
     }
 
-    // --- VUE RESULTAT ---
     return (
         <div className="min-h-screen bg-[#0B0F19] text-white p-6 md:p-12 overflow-hidden relative">
-
-            {/* Navbar */}
             <div className="flex justify-between items-center mb-10 opacity-70">
                 <Link href="/" className="flex items-center gap-2 hover:text-indigo-400 transition-colors">
                     <ChevronLeft className="w-4 h-4" /> Nouvelle Recherche
@@ -206,7 +193,6 @@ export default function AnalysePage() {
 
             <div className={`grid md:grid-cols-2 gap-6 relative transition-all duration-1000 ${!isUnlocked ? "filter blur-xl select-none opacity-40 scale-95" : "filter blur-0 opacity-100 scale-100"}`}>
 
-                {/* Prix */}
                 <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-sm">
                     <h3 className="text-slate-400 mb-4 text-sm uppercase tracking-wider">Estimation Optimisée</h3>
                     <div className="text-4xl md:text-5xl font-bold text-green-400 mb-2">
@@ -215,7 +201,6 @@ export default function AnalysePage() {
                     <div className="text-sm text-slate-500">Confiance IA : {report?.confidence_score}</div>
                 </div>
 
-                {/* Profil */}
                 <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-sm">
                     <h3 className="text-slate-400 mb-4 text-sm uppercase tracking-wider">Psychologie Vendeur</h3>
                     <div className="mb-4">
@@ -228,13 +213,11 @@ export default function AnalysePage() {
                     </p>
                 </div>
 
-                {/* Marché */}
                 <div className="md:col-span-2 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-sm">
                     <h3 className="text-slate-400 mb-3 text-sm uppercase tracking-wider">Analyse Contexte & Marché</h3>
                     <p className="text-lg text-slate-200 leading-relaxed">{report?.market_analysis}</p>
                 </div>
 
-                {/* Stratégie */}
                 <div className="md:col-span-2 bg-gradient-to-br from-slate-900 to-indigo-900/20 p-8 rounded-2xl border border-indigo-500/30">
                     <h3 className="text-indigo-300 mb-6 font-bold flex items-center gap-2 text-lg">
                         <Unlock className="w-5 h-5" /> Stratégie de Négociation
@@ -250,7 +233,6 @@ export default function AnalysePage() {
                 </div>
             </div>
 
-            {/* Paywall */}
             {!isUnlocked && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
                     <div className="bg-[#0B0F19]/80 backdrop-blur-xl border border-indigo-500/50 p-8 md:p-10 rounded-3xl text-center max-w-md shadow-2xl shadow-indigo-500/20 animate-in fade-in zoom-in duration-500">
@@ -279,4 +261,18 @@ function StepItem({ step, current, label }: { step: number, current: number, lab
     if (current > step) return <div className="flex items-center text-green-400 transition-all duration-300 font-medium"><CheckCircle className="w-5 h-5 mr-3" /> {label}</div>;
     if (current === step) return <div className="flex items-center text-indigo-300 transition-all duration-300 font-medium"><Loader2 className="w-5 h-5 mr-3 animate-spin" /> {label}</div>;
     return <div className="flex items-center text-slate-600 transition-all duration-300"><div className="w-5 h-5 mr-3 border border-slate-700 rounded-full"></div> {label}</div>;
+}
+
+// 2. LE COMPOSANT PRINCIPAL EXPORTÉ (Le Wrapper Suspense)
+export default function AnalysePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center">
+                <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+                <p className="text-slate-400">Initialisation...</p>
+            </div>
+        }>
+            <AnalyseContent />
+        </Suspense>
+    );
 }
