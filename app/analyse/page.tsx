@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react"; // Ajout de Suspense
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2, Lock, CheckCircle, MapPin, Unlock, Download, ChevronLeft, User } from "lucide-react";
+import { Loader2, Lock, CheckCircle, MapPin, Unlock, Download, ChevronLeft, Play, Square } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
 
@@ -15,7 +15,7 @@ interface ReportData {
     error?: string;
 }
 
-// 1. ON DÉPLACE TOUTE LA LOGIQUE ICI (Renommé en AnalyseContent)
+// COMPOSANT CONTENU (Logique principale)
 function AnalyseContent() {
     const searchParams = useSearchParams();
 
@@ -27,6 +27,9 @@ function AnalyseContent() {
     const [isReadyToPay, setIsReadyToPay] = useState(false);
     const [isUnlocked, setIsUnlocked] = useState(false);
     const [report, setReport] = useState<ReportData | null>(null);
+
+    // État pour l'Audio Mobile
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         const steps = [
@@ -63,6 +66,42 @@ function AnalyseContent() {
 
     const handleUnlock = () => setIsUnlocked(true);
 
+    // --- LOGIQUE AUDIO (COACH VOCAL) ---
+    const toggleAudio = () => {
+        if (!report) return;
+
+        if (isPlaying) {
+            window.speechSynthesis.cancel();
+            setIsPlaying(false);
+            return;
+        }
+
+        const textToRead = `
+      Briefing Mandat Flash pour le bien situé à : ${address}.
+      Estimation IA : ${report.price_estimation}.
+      
+      Attention, profil vendeur détecté : ${report.owner_profile?.type}. 
+      ${report.owner_profile?.description}
+      
+      Voici ta stratégie de négociation :
+      Premier point : ${report.negotiation_points?.[0] || "Non défini"}.
+      Deuxième point : ${report.negotiation_points?.[1] || "Non défini"}.
+      Troisième point : ${report.negotiation_points?.[2] || "Non défini"}.
+      
+      Bonne chance pour le mandat.
+    `;
+
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = "fr-FR";
+        utterance.rate = 1.1;
+        utterance.pitch = 1;
+        utterance.onend = () => setIsPlaying(false);
+
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+    };
+
+    // --- LOGIQUE PDF ---
     const generatePDF = () => {
         if (!report) return;
 
@@ -140,6 +179,7 @@ function AnalyseContent() {
         doc.save(filename);
     };
 
+    // --- VUE CHARGEMENT ---
     if (!isReadyToPay) {
         return (
             <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center p-6">
@@ -160,8 +200,10 @@ function AnalyseContent() {
         );
     }
 
+    // --- VUE RESULTAT ---
     return (
-        <div className="min-h-screen bg-[#0B0F19] text-white p-6 md:p-12 overflow-hidden relative">
+        <div className="min-h-screen bg-[#0B0F19] text-white p-6 md:p-12 overflow-hidden relative pb-24">
+
             <div className="flex justify-between items-center mb-10 opacity-70">
                 <Link href="/" className="flex items-center gap-2 hover:text-indigo-400 transition-colors">
                     <ChevronLeft className="w-4 h-4" /> Nouvelle Recherche
@@ -233,6 +275,32 @@ function AnalyseContent() {
                 </div>
             </div>
 
+            {/* BOUTON AUDIO FLOTTANT (Visible uniquement si débloqué) */}
+            {isUnlocked && (
+                <div className="fixed bottom-6 right-6 z-40">
+                    <button
+                        onClick={toggleAudio}
+                        className={`flex items-center gap-3 px-6 py-4 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 ${isPlaying
+                                ? "bg-red-500 text-white animate-pulse"
+                                : "bg-white text-indigo-900"
+                            }`}
+                    >
+                        {isPlaying ? (
+                            <>
+                                <Square className="w-5 h-5 fill-current" />
+                                <span className="font-bold hidden md:inline">Stop</span>
+                            </>
+                        ) : (
+                            <>
+                                <Play className="w-5 h-5 fill-current" />
+                                <span className="font-bold hidden md:inline">Écouter Briefing</span>
+                                <span className="font-bold md:hidden">Écouter</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
+
             {!isUnlocked && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
                     <div className="bg-[#0B0F19]/80 backdrop-blur-xl border border-indigo-500/50 p-8 md:p-10 rounded-3xl text-center max-w-md shadow-2xl shadow-indigo-500/20 animate-in fade-in zoom-in duration-500">
@@ -263,7 +331,7 @@ function StepItem({ step, current, label }: { step: number, current: number, lab
     return <div className="flex items-center text-slate-600 transition-all duration-300"><div className="w-5 h-5 mr-3 border border-slate-700 rounded-full"></div> {label}</div>;
 }
 
-// 2. LE COMPOSANT PRINCIPAL EXPORTÉ (Le Wrapper Suspense)
+// 2. LE COMPOSANT EXPORTÉ (Le Wrapper Suspense Obligatoire)
 export default function AnalysePage() {
     return (
         <Suspense fallback={

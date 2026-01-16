@@ -16,7 +16,7 @@ export default function Home() {
     e.preventDefault();
     if (address.trim().length > 3) {
       setIsLoading(true);
-      // On encode toutes les infos dans l'URL pour les passer à la page suivante
+      // On encode toutes les infos dans l'URL
       const params = new URLSearchParams({
         addr: address,
         name: clientName,
@@ -44,18 +44,17 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-slate-400 text-lg max-w-lg mx-auto">
-            Ne partez plus en estimation "à l'aveugle". Générez un profil psychologique et une stratégie de prix en 30 secondes.
+            Générez un profil psychologique, une stratégie de prix et un briefing audio en 30 secondes.
           </p>
         </div>
 
         {/* LE FORMULAIRE STRATÉGIQUE */}
         <form onSubmit={handleSearch} className="relative group mt-8">
-          {/* Fond lumineux */}
           <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
 
           <div className="relative bg-[#111827] border border-slate-700 rounded-xl p-6 shadow-2xl space-y-4">
 
-            {/* Champ 1 : Adresse (Obligatoire) */}
+            {/* Adresse */}
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Adresse du bien *</label>
               <div className="flex items-center bg-slate-900/50 border border-slate-700 rounded-lg p-2 focus-within:border-indigo-500 transition-colors">
@@ -72,7 +71,7 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Champ 2 : Nom du Client (Optionnel) */}
+              {/* Nom Client */}
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nom du Vendeur (Optionnel)</label>
                 <div className="flex items-center bg-slate-900/50 border border-slate-700 rounded-lg p-2 focus-within:border-indigo-500 transition-colors">
@@ -87,7 +86,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Champ 3 : Contexte (Optionnel mais Puissant) */}
+              {/* Contexte */}
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Contexte connu (Optionnel)</label>
                 <div className="flex items-center bg-slate-900/50 border border-slate-700 rounded-lg p-2 focus-within:border-indigo-500 transition-colors">
@@ -114,11 +113,10 @@ export default function Home() {
           </div>
         </form>
 
-        {/* Footer Trust */}
         <div className="flex justify-center gap-6 opacity-30 grayscale text-sm font-bold text-slate-400 pt-8">
           <span>DONNÉES DVF</span>
           <span>ANALYSE SOCIO-DÉMO</span>
-          <span>PROFILING IA</span>
+          <span>COACH VOCAL</span>
         </div>
 
       </div>
