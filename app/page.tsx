@@ -1,5 +1,7 @@
 "use client";
 
+// 1. IMPORT DES COMPOSANTS CLERK
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { MapPin, Zap, User, FileText } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,7 +18,6 @@ export default function Home() {
     e.preventDefault();
     if (address.trim().length > 3) {
       setIsLoading(true);
-      // On encode toutes les infos dans l'URL
       const params = new URLSearchParams({
         addr: address,
         name: clientName,
@@ -27,7 +28,27 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#0B0F19]">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#0B0F19] relative">
+
+      {/* 2. NAVBAR UTILISATEUR EN HAUT A DROITE */}
+      <nav className="absolute top-0 right-0 p-6 z-50">
+        <SignedOut>
+          {/* Si pas connecté : Bouton Connexion */}
+          <SignInButton mode="modal">
+            <button className="text-sm font-bold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors border border-white/10 shadow-lg backdrop-blur-sm">
+              Connexion Agent
+            </button>
+          </SignInButton>
+        </SignedOut>
+
+        <SignedIn>
+          {/* Si connecté : Avatar et Badge */}
+          <div className="flex items-center gap-4 bg-slate-900/50 p-2 rounded-full border border-white/10 backdrop-blur-md">
+            <span className="text-xs font-bold text-indigo-400 pl-3 hidden md:inline uppercase tracking-wider">Mode Expert</span>
+            <UserButton afterSignOutUrl="/" />
+          </div>
+        </SignedIn>
+      </nav>
 
       <div className="w-full max-w-2xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
@@ -48,7 +69,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* LE FORMULAIRE STRATÉGIQUE */}
+        {/* Formulaire */}
         <form onSubmit={handleSearch} className="relative group mt-8">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
 
@@ -71,7 +92,7 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Nom Client */}
+              {/* Nom */}
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nom du Vendeur (Optionnel)</label>
                 <div className="flex items-center bg-slate-900/50 border border-slate-700 rounded-lg p-2 focus-within:border-indigo-500 transition-colors">
